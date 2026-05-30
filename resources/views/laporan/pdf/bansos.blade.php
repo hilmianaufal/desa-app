@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <title>Laporan Bantuan Sosial</title>
+
+    <style>
+        @page { margin: 28px 32px; }
+
+        body {
+            font-family: DejaVu Sans, sans-serif;
+            font-size: 11px;
+            color: #0f172a;
+        }
+
+        .header {
+            border-bottom: 4px solid #f43f5e;
+            padding-bottom: 14px;
+            margin-bottom: 18px;
+        }
+
+        .brand {
+            font-size: 11px;
+            color: #e11d48;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .title {
+            margin: 4px 0 0;
+            font-size: 22px;
+            font-weight: bold;
+            color: #881337;
+        }
+
+        .subtitle {
+            margin-top: 4px;
+            color: #64748b;
+        }
+
+        .summary {
+            width: 100%;
+            margin: 18px 0;
+            border-spacing: 8px;
+        }
+
+        .summary td {
+            background: #fff1f2;
+            border: 1px solid #fecdd3;
+            padding: 12px;
+        }
+
+        .summary-label {
+            font-size: 9px;
+            color: #64748b;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .summary-value {
+            margin-top: 4px;
+            font-size: 18px;
+            font-weight: bold;
+            color: #e11d48;
+        }
+
+        table.data {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        table.data th {
+            background: #881337;
+            color: white;
+            padding: 9px 7px;
+            font-size: 9px;
+            text-align: left;
+            text-transform: uppercase;
+        }
+
+        table.data td {
+            border-bottom: 1px solid #e2e8f0;
+            padding: 8px 7px;
+            vertical-align: top;
+        }
+
+        table.data tr:nth-child(even) {
+            background: #f8fafc;
+        }
+
+        .badge {
+            padding: 3px 8px;
+            font-size: 9px;
+            font-weight: bold;
+            border-radius: 999px;
+            background: #ffe4e6;
+            color: #be123c;
+        }
+
+        .footer {
+            position: fixed;
+            bottom: -10px;
+            left: 0;
+            right: 0;
+            font-size: 9px;
+            color: #64748b;
+            border-top: 1px solid #e2e8f0;
+            padding-top: 8px;
+        }
+
+        .footer-left { float: left; }
+        .footer-right { float: right; }
+    </style>
+</head>
+
+<body>
+    <div class="header">
+        <div class="brand">Aplikasi Manajemen Data Desa</div>
+        <h1 class="title">Laporan Bantuan Sosial</h1>
+        <div class="subtitle">Rekapitulasi data penerima bantuan sosial desa.</div>
+        <div class="subtitle">Dicetak pada: {{ now()->format('d-m-Y H:i') }}</div>
+    </div>
+
+    <table class="summary">
+        <tr>
+            <td>
+                <div class="summary-label">Total Data</div>
+                <div class="summary-value">{{ $bantuans->count() }}</div>
+            </td>
+            <td>
+                <div class="summary-label">Diajukan</div>
+                <div class="summary-value">{{ $bantuans->where('status', 'Diajukan')->count() }}</div>
+            </td>
+            <td>
+                <div class="summary-label">Diterima</div>
+                <div class="summary-value">{{ $bantuans->where('status', 'Diterima')->count() }}</div>
+            </td>
+            <td>
+                <div class="summary-label">Total Nominal</div>
+                <div class="summary-value">
+                    Rp {{ number_format($bantuans->where('status', 'Diterima')->sum('nominal'), 0, ',', '.') }}
+                </div>
+            </td>
+        </tr>
+    </table>
+
+    <table class="data">
+        <thead>
+            <tr>
+                <th>No</th>
+                <th>Nama Penerima</th>
+                <th>NIK</th>
+                <th>Jenis Bantuan</th>
+                <th>Periode</th>
+                <th>Nominal</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            @foreach ($bantuans as $bantuan)
+                <tr>
+                    <td>{{ $loop->iteration }}</td>
+                    <td><strong>{{ $bantuan->penduduk?->nama ?? '-' }}</strong></td>
+                    <td>{{ $bantuan->penduduk?->nik ?? '-' }}</td>
+                    <td>{{ $bantuan->jenis_bantuan }}</td>
+                    <td>{{ $bantuan->periode ?? '-' }}</td>
+                    <td>Rp {{ number_format($bantuan->nominal ?? 0, 0, ',', '.') }}</td>
+                    <td><span class="badge">{{ $bantuan->status }}</span></td>
+                </tr>
+            @endforeach
+        </tbody>
+    </table>
+
+    <div class="footer">
+        <div class="footer-left">Laporan Bantuan Sosial Desa</div>
+        <div class="footer-right">Generated by Desa Digital</div>
+    </div>
+</body>
+</html>
